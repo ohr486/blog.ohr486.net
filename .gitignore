@@ -1,0 +1,6 @@
+# for editor
+*.swp
+*~
+
+# etc
+.DS_Store

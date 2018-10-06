@@ -1,0 +1,12 @@
+# for tf vars
+terraform.tfvars
+terraform.tfstate
+
+# for backup
+terraform.tfstate*.backup
+
+# for acc
+credentials
+
+.terraform
+tfplan
