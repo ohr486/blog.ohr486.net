@@ -24,24 +24,24 @@ resource "aws_ecs_task_definition" "ecs_blog_service" {
   container_definitions = <<EOF
 [
   {
+    "name": "nginx",
     "environment": [],
     "image": "nginx",
+    "memory": 300,
+    "portMappings": [
+      {
+        "hostPort": 80,
+        "containerPort": 80
+      }
+    ],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
         "awslogs-group": "blog-ohr486-net",
         "awslogs-region": "ap-northeast-1",
-        "awslogs-stream-prefix": "wordpress"
+        "awslogs-stream-prefix": "nginx"
       }
-    },
-    "memory": 300,
-    "name": "wordpress",
-    "portMappings": [
-      {
-        "containerPort": 5000,
-        "protocol": "tcp"
-      }
-    ]
+    }
   }
 ]
 EOF
