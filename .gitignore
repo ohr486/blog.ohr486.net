@@ -1,3 +1,6 @@
+# for terraform
+aws/.terraform
+
 # for editor
 *.swp
 *~
