@@ -1,38 +1,63 @@
 baseURL = "https://blog.ohr486.net/"
 languageCode = "ja"
 title = "ohr486's blog"
+hasCJKLanguage = true
 
 theme = "uBlogger"
 
 [params]
-  version = "2.0.X"
+    version = "2.0.X"
+    defaultTheme = "light"
+    gitRepo = "https://github.com/ohr486/blog.ohr486.net"
+
+    [params.social]
+        GitHub = "ohr486"
+        Twitter = "ohrdev"
+        Email = "ohr486@gmail.com"
+        RSS = true
+
+    [params.header]
+    [params.footer]
+        enable = true
+        custom = ""
+        hugo = true
+        copyright = true
+        author = true
+        since = 2021
+        icp = ""
+        license = ""
+
+    [params.page]
+        [params.page.share]
+            enable = true
+            Twitter = true
+            Facebook = true
 
 [menu]
     [[menu.main]]
         identifier = "posts"
-        pre = ""
-        post = ""
         name = "Posts"
         url = "/posts/"
-        title = ""
         weight = 1
     [[menu.main]]
         identifier = "tags"
-        pre = ""
-        post = ""
         name = "Tags"
         url = "/tags/"
-        title = ""
         weight = 2
     [[menu.main]]
         identifier = "categories"
-        pre = ""
-        post = ""
         name = "Categories"
         url = "/categories/"
-        title = ""
         weight = 3
 
 [markup]
-  [markup.highlight]
-    noClasses = false
+    [markup.highlight]
+        codeFences = true
+        guessSyntax = true
+        noClasses = false
+
+[author]
+    nickname = "ohr486"
+
+[Permalinks]
+    posts = ":year/:month/:day/:filename"
