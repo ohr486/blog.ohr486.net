@@ -61,3 +61,27 @@ theme = "uBlogger"
 
 [Permalinks]
     posts = ":year/:month/:day/:filename"
+
+[deployment]
+    [[deployment.targets]]
+        name = "blog.ohr486.net"
+        URL = "s3://blog.ohr486.net?region=ap-northeast-1"
+
+    [[deployment.matchers]]
+        pattern = "^.+\\.(js|css|svg|ttf)$"
+        cacheControl = "max-age=31536000, no-transform, public"
+        gzip = true
+
+    [[deployment.matchers]]
+        pattern = "^.+\\.(png|jpg)$"
+        cacheControl = "max-age=31536000, no-transform, public"
+        gzip = false
+
+    [[deployment.matchers]]
+        pattern = "^sitemap\\.xml$"
+        contentType = "application/xml"
+        gzip = true
+
+    [[deployment.matchers]]
+        pattern = "^.+\\.(html|xml|json)$"
+        gzip = true
