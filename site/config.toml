@@ -8,6 +8,7 @@ theme = "uBlogger"
     version = "2.0.X"
     defaultTheme = "light"
     gitRepo = "https://github.com/ohr486/blog.ohr486.net"
+    image = "static/images/blog-logo.jpg"
 
     [params.social]
         GitHub = "ohr486"
@@ -35,7 +36,7 @@ theme = "uBlogger"
         [params.page.seo]
 
     [params.seo]
-        images = "https://blog.ohr486.net/images/blog-logo.jpg"
+        images = "static/images/blog-logo.jpg"
         thumbnailUrl = "https://blog.ohr486.net/images/blog-logo.jpg"
 
 [menu]
