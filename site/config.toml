@@ -2,7 +2,6 @@ baseURL = "https://blog.ohr486.net/"
 languageCode = "ja"
 title = "ohr486's blog"
 hasCJKLanguage = true
-
 theme = "uBlogger"
 
 [params]
@@ -17,6 +16,7 @@ theme = "uBlogger"
         RSS = true
 
     [params.header]
+
     [params.footer]
         enable = true
         custom = ""
@@ -32,6 +32,11 @@ theme = "uBlogger"
             enable = true
             Twitter = true
             Facebook = true
+        [params.page.seo]
+
+    [params.seo]
+        images = "https://blog.ohr486.net/images/blog-logo.jpg"
+        thumbnailUrl = "https://blog.ohr486.net/images/blog-logo.jpg"
 
 [menu]
     [[menu.main]]
