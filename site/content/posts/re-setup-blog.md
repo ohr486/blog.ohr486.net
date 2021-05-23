@@ -236,9 +236,30 @@ $ hugo deploy
 注意点ですが、作成した記事がドラフト(`draft: true`)の場合、当然deploy対象にならないので、
 ドラフト状態を解除(`draft: false`)しておく必要があります。
 
-結果は以下。
+コンテンツ生成してdeployした結果は以下。
 
+```terminfo
+$ hugo
+Start building sites …
 
+                   | EN
+-------------------+-----
+  Pages            | 16
+  Paginator pages  |  0
+  Non-page files   |  0
+  Static files     | 88
+  Processed images |  0
+  Aliases          |  5
+  Sitemaps         |  1
+  Cleaned          |  0
+
+Total in 156 ms
+$ hugo deploy
+Deploying to target "blog.ohr486.net" (s3://blog.ohr486.net?region=ap-northeast-1)
+Identified 108 file(s) to upload, totaling 3.0 MB, and 0 file(s) to delete.
+Success!
+Success!
+```
 
 ## まとめ
 

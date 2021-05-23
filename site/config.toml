@@ -66,6 +66,7 @@ theme = "uBlogger"
     [[deployment.targets]]
         name = "blog.ohr486.net"
         URL = "s3://blog.ohr486.net?region=ap-northeast-1"
+        cloudFrontDistributionID = "E348PDJARCQT4X"
 
     [[deployment.matchers]]
         pattern = "^.+\\.(js|css|svg|ttf)$"
