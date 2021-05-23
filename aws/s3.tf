@@ -24,9 +24,11 @@ resource "aws_s3_bucket_policy" "blog_ohr486_net" {
         Effect    = "Allow"
         Principal = "*"
         Action    = [
-          "s3:GetObject"
+          "s3:GetObject",
+          "s3:ListBucket"
         ]
         Resource = [
+          "arn:aws:s3:::blog.ohr486.net",
           "arn:aws:s3:::blog.ohr486.net/*"
         ]
       }

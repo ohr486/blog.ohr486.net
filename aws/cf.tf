@@ -1,6 +1,7 @@
 resource "aws_cloudfront_distribution" "blog_ohr486_net" {
   origin {
-    domain_name = aws_s3_bucket.blog_ohr486_net.bucket_regional_domain_name
+    domain_name = "blog.ohr486.net.s3-website-ap-northeast-1.amazonaws.com"
+    # domain_name = aws_s3_bucket.blog_ohr486_net.bucket_regional_domain_name
     origin_id = local.s3_origin_id_blog_ohr486_net
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.blog_ohr486_net_identity.cloudfront_access_identity_path
