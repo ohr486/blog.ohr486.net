@@ -2,9 +2,13 @@ resource "aws_s3_bucket" "blog_ohr486_net" {
   bucket = "blog.ohr486.net"
   acl = "public-read"
 
+  versioning {
+    enabled = true
+  }
+
   website {
     index_document = "index.html"
-    error_document = "404.html"
+    error_document = "index.html"
   }
 }
 
@@ -28,4 +32,8 @@ resource "aws_s3_bucket_policy" "blog_ohr486_net" {
       }
     ]
   })
+}
+
+locals {
+  s3_origin_id_blog_ohr486_net = "s3_origin_id_blog_ohr486_net"
 }
