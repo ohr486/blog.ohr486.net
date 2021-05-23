@@ -29,15 +29,19 @@ theme = "uBlogger"
         license = ""
 
     [params.page]
+        theme = "full"
+
         [params.page.share]
             enable = true
             Twitter = true
             Facebook = true
+
         [params.page.seo]
+            images = [ "static/images/blog-logo.jpg" ]
 
     [params.seo]
         images = "static/images/blog-logo.jpg"
-        thumbnailUrl = "https://blog.ohr486.net/images/blog-logo.jpg"
+        thumbnailUrl = "static/images/blog-logo.jpg"
 
 [menu]
     [[menu.main]]
