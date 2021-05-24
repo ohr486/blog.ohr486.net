@@ -28,6 +28,11 @@ theme = "uBlogger"
         icp = ""
         license = ""
 
+    [params.comment]
+        enable = true
+        [params.comment.disqus]
+            enable = true
+            shortname = "ohr486s-blog"
     [params.page]
         theme = "full"
 
@@ -37,7 +42,6 @@ theme = "uBlogger"
             Facebook = true
 
         [params.page.seo]
-            images = [ "static/images/blog-logo.jpg" ]
 
     [params.seo]
         images = "static/images/blog-logo.jpg"
