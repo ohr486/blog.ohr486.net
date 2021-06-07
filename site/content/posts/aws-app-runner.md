@@ -1,6 +1,6 @@
 ---
 title: "サービスレビュー: AWS App Runner"
-date: 2021-05-24T22:12:10+09:00
+date: 2021-06-06T22:12:10+09:00
 draft: true
 tags: [ aws, app-runner ]
 categories: [ tech ]
@@ -60,11 +60,24 @@ RailsアプリをAppRunnerで動かしてみるケースを想定して動かし
 
 AppRunnerの実行に必要な準備は以下です。
 
+* Railsアプリの作成
 * 関連AWSリソースの作成
 * RailsアプリのDockerイメージの作成
 * AppRunnerサービスの作成
 
+### Railsアプリの作成
+
+ソースコードは[こちら](https://github.com/ohr486/blog-sample-aws-app-runner/tree/master/app)にupしました。
+単純なRailsアプリで以下の機能を持ちます。
+
+* `/info/cpu`で実行環境のCPU情報を出力
+* `/info/mem`で実行環境のメモリ情報を出力
+* `/users`でusersテーブルに対するCRUD処理
+
 ### 関連AWSリソースの作成
+
+必要なAWSリソースはterraformで作成しています。
+ソースコードは[こちら](https://github.com/ohr486/blog-sample-aws-app-runner/tree/master/aws)です。
 
 #### ECR
 
@@ -103,8 +116,72 @@ VPC外からアクセスすることはできません。
 
 ```terraform
 # terraform
+resource "aws_rds_cluster" "blog_sample_db" {
+  cluster_identifier      = "blog-sample-db"
+  engine                  = "aurora-mysql"
+  engine_version          = "5.7.mysql_aurora.2.07.1"
+  availability_zones      = ["ap-northeast-1a", "ap-northeast-1c", "ap-northeast-1d"]
+  database_name           = "blog_sample"
+  master_username         = "admin"
+  master_password         = "password"
+  backup_retention_period = 1
+  preferred_backup_window = "07:00-09:00"
+  port                    = 3306
+  skip_final_snapshot     = true
+  db_subnet_group_name    = "ohr486base-public"      # SET YOUR DB SUBNET NAME
+  vpc_security_group_ids  = ["sg-0b8cb29c69dc394e6"] # SET YOUR VPC SECURITY GROUP IDS
+
+  tags = {
+    Name = "blog-sample"
+  }
+}
+
+resource "aws_rds_cluster_instance" "blog_sample_db1" {
+  identifier               = "blog-sample-db-1"
+  instance_class           = "db.t3.small"
+  cluster_identifier       = aws_rds_cluster.blog_sample_db.id
+  engine                   = aws_rds_cluster.blog_sample_db.engine
+  engine_version           = aws_rds_cluster.blog_sample_db.engine_version
+  db_subnet_group_name     = aws_rds_cluster.blog_sample_db.db_subnet_group_name
+
+  tags = {
+    Name = "blog-sample-db-1"
+  }
+}
 ```
 
+#### AppRunner実行の為のIAMRole
+
+```terraform
+# terraform
+resource "aws_iam_role" "blog_sample_app_runner" {
+  name = "blog-sample-app-runner"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": [
+          "build.apprunner.amazonaws.com",
+          "tasks.apprunner.amazonaws.com"
+        ]
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "blog_sample_app_runner" {
+  role       = aws_iam_role.blog_sample_app_runner.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
+}
+```
 
 ### RailsアプリのDockerイメージの作成
 
@@ -112,8 +189,6 @@ RailsアプリのDockerイメージを作成する際、気になったポイン
 
 * REPL
 * プロセス設計
-* 環境変数の注入
-* ログファイルの出力
 * Migration
 
 #### REPL
@@ -131,7 +206,7 @@ Railsはアプリケーションサーバーしか提供しないので、nginx�
 * 静的コンテンツのトラフィックを直接返却
 * 静的リダイレクト
 
-また、後述するログファイルの転送の為にfluentdやfluentbitといったログのエクスポーターも同様に必要です。
+また特定のログをS3等に保存したい場合、転送の為にfluentdやfluentbitといったエクスポーターも同様に必要になります。
 
 AppRunnerの構造上、Rails以外のプロセスも1コンテナに同居させる必要がある為、
 wrapperスクリプトを作成してその中で複数のプロセスを起動・スーパバイズし、
@@ -144,53 +219,69 @@ wrapperスクリプトを作成してその中で複数のプロセスを起動�
 
 なおソースコードからAppRunnerを起動させる場合は、ベースになっているランタイムの[AmazonLinuxのDockerイメージ](https://hub.docker.com/_/amazonlinux)
 に対して、起動時のコマンドの中でnginxやfluentdといった必要なミドルウェアをインストールする必要があります。
-頑張ればやれなくはないのですが、素直に必要なミドルウェアをインストールしたDockerイメージをECRにpushして使う方が良いでしょう。
-
-
-#### 環境変数の注入
-
-コンテナに環境変数を渡す方法としては以下の2つあります。
-
-* Dockerfileに記述
-* AppRunnerのサービス設定で環境変数を指定
-
-どちらが優先されるかは後述します。
-
-
-
-#### ログファイルの出力
-
-AppRunnerのログはCloudWatchに吐かれます。
-コンテナの標準出力の内容がそのまま出力されるのですが、
-(要確認)
-
-KPIログやユーザーの操作履歴等、ログの種類別に別々に処理をしたい場合は
-全て同じ出力先に出力されると運用上困ることがあります。
-
-ECS,EKS,EC2でアプリを運用する場合は、それぞれログの種類別にログファイルを出力し、
-それをfluentd、fluentbit等のエクスポーターで転送すれば事足りますが、
-AppRunnerの場合ですと
-
-
-
-
+頑張ればやれなくはないかもしれませんが、素直に必要なミドルウェアをインストールしたDockerイメージをECRにpushして使う方が良いでしょう。
 
 #### Migration
 
+Railsでアプリを運用する際、DBのマイグレーションをどう実行するかは悩みどころです。
+EC2であればcapistranoで特定のサーバーをmigratorとして実行させることが可能ですし、
+EKSであればJobを利用すれば1度だけマイグレーションを実行させる事が可能です。
+ECSの場合はJobに相当する機構が無いので`ecs-cli`からタスクを起動してoneshotでマイグレーションを実行したり、
+CodeBuildを利用してマイグレーションを実行する方法が考えられます。
 
+AppRunnerの場合、特定のコンテナを起動する術が無いので、CodeBuildやマイグレーションの為のEC2を用意して
+AppRunner外から実行させるしか方法がありません。
 
+そもそもAppRunnerのメリットは必要なリソースを一括自動でセットアップしてくれる点なので、
+マイグレーション用のリソースを別途利用するのは本末転倒な気がします。
+このあたりもAWSの改善を待ちましょう。
 
+今回作成するデモでは、Dockerの起動スクリプトにマイグレーション処理を入れて対応しました。
+この方法は、タイミングによっては同時に複数のマイグレーションが走る可能性があるので、
+本番環境では適用できないので注意してください。
 
 #### Dockerfile
 
-
-
+最終的なDockerfileは以下となりました。
 
 ```Dockerfile
+# Dockerfile
+FROM ruby:3.0.0
 
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+    && apt-get update -qq \
+    && apt-get install -y nodejs yarn \
+    && mkdir /app
+WORKDIR /app
+COPY Gemfile /app/Gemfile
+COPY Gemfile.lock /app/Gemfile.lock
+RUN bundle install
+COPY . /app
+
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
+
+# for rails & mysql process
+EXPOSE 3000 3306
+
+CMD ["entrypoint.sh"]
 ```
 
+entrypoint.shは以下です。
 
+```bash
+#!/bin/bash
+set -e
+rm -rf tmp/*
+
+# タイミングによっては同時に複数のマイグレーションが走る可能性があるので注意
+bundle exec rake db:create
+bundle exec rake db:migrate
+
+bundle exec rails server -b 0.0.0.0
+```
 
 
 ### AppRunnerサービスの作成
