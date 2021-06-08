@@ -1,7 +1,7 @@
 ---
 title: "サービスレビュー: AWS App Runner"
 date: 2021-06-06T22:12:10+09:00
-draft: true
+draft: false
 tags: [ aws, app-runner ]
 categories: [ tech ]
 ---
