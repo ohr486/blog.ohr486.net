@@ -1,6 +1,6 @@
 ---
 title: "iex inside"
-date: 2021-12-20T00:00:00+09:00
+date: 2021-12-18T00:00:00+09:00
 draft: false
 tags: [ elixir, advent-calendar ]
 categories: [ tech ]
@@ -244,15 +244,15 @@ iexのREPLが実行される処理は大きく以下のフェーズに分類で�
 * スーパバイザの起動
 * elixirモジュールの起動
 * IEx.Server.shell_loop
-* IEx.Server.loop
 * IEx.Evaluator.loop
+* IEx.Server.loop
 * IEx.Evaluator.eval
 
 ### スーパバイザの起動
 
 ![iex-sup](/images/2021-12-20/iex-sup.png)
 
-`IEx.CLI.start` がcallされると、内部的に`:user.start()`がcallされI/Oサーバーであるuserモジュールが起動します。
+`IEx.CLI.start` がcallされると、内部的に`:user.start()`がcallされI/Oサーバーであるuserモジュールのプロセスが生成されます。
 
 [lib/iex/lib/iex/cli.ex](https://github.com/elixir-lang/elixir/blob/main/lib/iex/lib/iex/cli.ex)
 
@@ -276,7 +276,7 @@ defmodule IEx.CLI do
 end
 ```
 
-また`IEx.start`から最終的に`IEx.Supervisor`が起動し`IEx.Config`、`IEx.Broker`、`IEx.Pry`サーバーが起動します。
+また`IEx.start`から最終的に`IEx.Supervisor`がcallされ`IEx.Config`、`IEx.Broker`、`IEx.Pry`サーバープロセスが生成されます。
 
 [lib/iex/lib/iex/app.ex](https://github.com/elixir-lang/elixir/blob/main/lib/iex/lib/iex/app.ex)
 
@@ -291,13 +291,13 @@ defmodule IEx.App do
 end
 ```
 
-`iex`の実行に必要なプロセスを起動した後に、`IEx.Server.run_from_shell`で`iex`のREPLの実体となる処理をcallします。
+`iex`の実行に必要なプロセスを生成した後に、`IEx.Server.run_from_shell`で`iex`のREPLの実体となる処理をcallします。
 
 ### elixirモジュールの起動
 
 ![iex-elixir-up](/images/2021-12-20/iex-elixir-up.png)
 
-`IEx.Server.run_from_shell`は`spawn_monitor`で`:elixir.start_cli()`を実行するプロセスをspawnし、
+`IEx.Server.run_from_shell`は`spawn_monitor`で`:elixir.start_cli()`を実行するプロセスを生成し、
 `Iex.Server.shell_loop`でメッセージを待ち受けます。
 
 [lib/iex/lib/iex/server.ex](https://github.com/elixir-lang/elixir/blob/main/lib/iex/lib/iex/server.ex)
@@ -326,15 +326,17 @@ end
 
 `:elixir.start_cli()`は [spawn_monitor](https://hexdocs.pm/elixir/1.13.1/Kernel.html#spawn_monitor/3) で生成されたプロセスで実行されます。
 `spawn_monitor(Mod,Fun,Args)`はプロセスを監視付きで生成し、
-生成先のプロセスで引数として渡した関数(Mod,Fun,Args)の実行が完了した際に、
-プロセスの終了メッセージを明示的に受け取る事ができます。
+そのプロセスの中で引数に渡した関数(Mod,Fun,Args)が実行されます。
+関数の実行が完了した時、プロセスの終了メッセージを明示的に受け取る事ができます。
 
-プロセスの終了時にうけとるメッセージは以下です。
+プロセスの終了時に受け取るメッセージは以下です。
 
 ```elixir
 # 正常にプロセスが終了した場合
 {:DOWN, ref, :process, pid, :normal}
+```
 
+```elixir
 # エラーでプロセスが終了した場合、reasonにはエラー情報が入ります
 {:DOWN, ref, :process, pid, reason}
 ```
@@ -342,7 +344,7 @@ end
 #### spawn_monitorの動作実験
 
 `iex`で`spawn_monitor`の動作実験をしてみましょう。
-10秒sleepしてメッセージを出力する関数`spawn_monitor`を実行するプロセスを生成してみます。
+10秒sleepしてメッセージを出力する関数`Foo.bar`を実行するプロセスを生成してみます。
 
 ```elixir
 defmodule Foo do
@@ -396,10 +398,10 @@ iex(5)>
 ```
 
 `spawn_monitor`でプロセスを生成後、そのプロセス内で`Foo.bar()`が実行されます。
-10秒のsleepの後メッセージを表示してプロセスは終了します。
+10秒のsleepの後、メッセージを表示してプロセスは終了します。
 
-上の実行結果では、`sleep end`のメッセージが出力された後に`flush`を実行して、
-`{:DOWN, #Reference<0.4069173944.326107139.44304>, :process, #PID<0.118.0>, :normal}`
+上の実行結果では、`sleep end`のメッセージが出力された後、
+`flush`を実行して`{:DOWN, #Reference<0.4069173944.326107139.44304>, :process, #PID<0.118.0>, :normal}`
 のメッセージを受け取っています。
 メッセージは`{:DOWN, ref, :process, pid, :normal}`の形式なので、
 正常に`Foo.bar()`が実行されて終了したプロセスだとわかります。
@@ -439,9 +441,9 @@ end
 `IEx.Server.shell_loop`の中で`IEx.Server.run_without_registration`がcallされると、
 最終的に`IEx.Evaluator.loop`のプロセスが立ち上がりメッセージを待ち受けます。
 この`IEx.Evaluator.loop`は`{:eval, pid, code, state}`の
-メッセージを受け取ってcode(elixirのソースコードの文字列)をevalします。
+メッセージを受け取ると、code(elixirのソースコードの文字列)をevalします。
 このevalの結果を`{:evaled, pid, status, result}`として送信元に返却した後、
-loopを再び呼び出してメッセージを待ち受けなおします。
+`IEx.Evaluator.loop`をcallしてメッセージを再び待ち受けます。
 
 [lib/iex/lib/evaluator.ex](https://github.com/elixir-lang/elixir/blob/main/lib/iex/lib/iex/evaluator.ex)
 
@@ -476,8 +478,8 @@ end
 ![iex-server-loop](/images/2021-12-20/iex-server-loop.png)
 
 `IEx.Server.run_without_registration`は前節の通り
-`IEx.Evaluator.loop`のプロセスを立ち上げた後、
-`IEx.Server.loop`のプロセスを立ち上げます。
+`IEx.Evaluator.loop`のプロセスを生成した後、
+`IEx.Server.loop`のプロセスを生成します。
 
 `iex`のREPLの実体はこの`IEx.Server.loop`です。
 
@@ -529,7 +531,7 @@ defmodule IEx.Server do
 end
 ```
 
-このメッセージは`IEx.Server.wait_input`で受け取ります。
+`IEx.Server.wait_input`はこのメッセージを待ち受けます。
 
 [lib/iex/lib/server.ex](https://github.com/elixir-lang/elixir/blob/main/lib/iex/lib/iex/server.ex)
 
@@ -561,7 +563,7 @@ end
 
 ![iex-server-loop-eval](/images/2021-12-20/iex-server-loop-eval.png)
 
-`IEx.Server.wait_input`で入力内容を受け取ったら、
+`IEx.Server.wait_input`でユーザーの入力内容を受け取ったら、
 `IEx.Evaluator.loop`のプロセスに対して
 `{:eval, pid, code, state}`のメッセージを送信します。
 そして、evalが終了するまで`IEx.wait_eval`でeval結果のメッセージを待ち受けます。
@@ -595,7 +597,7 @@ end
 evalの結果を受け取ったら、再び`IEx.Server.loop`をcallしてREPLの入力を待ち受けます。
 
 以上が`iex`のREPLのループ構造です。
-このループによって、`iex`でelixirのコードが評価されていきます。
+このループによって、`iex`でelixirのコードがRead、Eval、Printされていきます。
 
 ## elixirコードのeval
 
@@ -618,7 +620,7 @@ elixirコードの文字列が評価される時、以下のようにデータ�
 CharlistからTokens、TokensからForms(Quoted)の変換とForms(Quoted)の評価は
 `elixir`モジュールの関数を呼び出して処理されます。
 
-例として`iex`で`1 + 1`のelixirコードを順番に処理し、最終的に`2`という結果を取得してみましょう。
+試しに`iex`で`1 + 1`のelixirコードを順番に処理し、最終的に`2`という結果が取得できるか実験してみましょう。
 
 ##### String.to_charlist
 
@@ -789,18 +791,18 @@ parse結果のフォームデータ、eval結果のbinding(変数の束縛)を�
 
 ### parse結果の表示
 
-REPLの入力文字列をフォームデータに変換する処理は、`IEx.Evaluator.parse`関数でした。
-この`parse`関数を以下のコードを追加して、フォームデータを出力するように変更します。
+REPLの入力文字列をフォームデータに変換する処理は`IEx.Evaluator.parse`関数で行われていました。
+この`parse`関数に以下のコードを追加して、フォームデータを出力するように改造します。
 
 [lib/iex/lib/evaluator.ex](https://github.com/elixir-lang/elixir/blob/main/lib/iex/lib/iex/evaluator.ex)
 
 追加するコード
 
 ```elixir
-# ----- Add for iex Hack! -----
+# ----- iex hack! -----
 IO.puts "===== forms ====="
 IO.inspect elem(result, 1) # resultの2番目の要素はforms
-# -----------------------------
+# ---------------------
 ```
 
 追加後の`parse`関数
@@ -829,10 +831,10 @@ defmodule IEx.Evaluator do
         {:ok, forms, last_op}
       end
 
-    # ----- Add for iex Hack! -----
+    # ----- iex hack! -----
     IO.puts "===== forms ====="
     IO.inspect elem(result, 1) # resultの2番目の要素はforms
-    # -----------------------------
+    # ---------------------
 
     case result do
       {:ok, forms, last_op} ->
@@ -858,8 +860,8 @@ end
 
 ### eval結果の表示
 
-`parse`関数と同様に、フォームデータのevalを行う`handle_eval`関数に以下のコードを追加して、
-eval結果のbindings(変数の束縛情報)を表示するようにします。
+`parse`関数と同様にフォームデータのevalを行う`handle_eval`関数に以下のコードを追加して、
+eval結果のbindings(変数の束縛情報)を表示するよう改造します。
 
 [lib/iex/lib/evaluator.ex](https://github.com/elixir-lang/elixir/blob/main/lib/iex/lib/iex/evaluator.ex)
 
@@ -912,7 +914,7 @@ Generated iex app
 $
 ```
 
-変更があった`iex`モジュールがコンパイルされています。
+変更があった`iex`モジュールが再コンパイルされています。
 コンパイルが終わったら`./bin/iex`で改造した`iex`を起動し、elixirコードを実行してみます。
 
 ```bash
