@@ -7,7 +7,7 @@ categories: [ tech ]
 author: ohr486
 ---
 
-この記事は[elixir Advent Calendar 2021](https://qiita.com/advent-calendar/2021/elixir)の20日目の記事です。
+この記事は[elixir Advent Calendar 2021](https://qiita.com/advent-calendar/2021/elixir)の18日目の記事です。
 
 elixirのプログラミングやphoenixに関する解説記事やドキュメントは比較的よく見かけるのですが、
 elixir言語自体の解説/ドキュメント/資料は少ないと感じています。
@@ -611,7 +611,7 @@ evalの結果を受け取ったら、再び`IEx.Server.loop`をcallしてREPLの
 `iex`のREPLで入力されたelixirのコード(の文字列)が評価(eval)されて結果が返却されるまでに、
 どういう処理がはしっているのでしょうか。
 
-#### String, Charlist, Tokens, Forms, Result
+### String, Charlist, Tokens, Forms, Result
 
 elixirコードの文字列が評価される時、以下のようにデータが変換されます。
 
@@ -622,7 +622,7 @@ CharlistからTokens、TokensからForms(Quoted)の変換とForms(Quoted)の評�
 
 試しに`iex`で`1 + 1`のelixirコードを順番に処理し、最終的に`2`という結果が取得できるか実験してみましょう。
 
-##### String.to_charlist
+#### String.to_charlist
 
 ```elixir
 iex(1)> String.to_charlist("1 + 1")
@@ -632,7 +632,7 @@ iex(2)>
 
 `String.to_charlist`は文字列をcharlistに変換します。
 
-##### :elixir.string_to_tokens
+#### :elixir.string_to_tokens
 
 ```elixir
 iex(2)> :elixir.string_to_tokens(
@@ -661,7 +661,7 @@ iex(3)>
 * file: ソースファイル名
 * opt: オプション情報
 
-##### :elixir.tokens_to_quoted
+#### :elixir.tokens_to_quoted
 
 ```elixir
 iex(3)> :elixir.tokens_to_quoted(
@@ -672,7 +672,7 @@ iex(3)>     {:dual_op, {1, 3, nil}, :+},
 iex(3)>     {:int, {1, 5, 1}, '1'}
 iex(3)>   ],
 iex(3)>   "nofile", # ソースファイル名
-iex(3)>   [], # option
+iex(3)>   [],       # option
 iex(3)> )
 {:ok,
   {:+, [line: 1], [1, 1]}
@@ -687,7 +687,7 @@ iex(4)>
 * file: ソースファイル名
 * opt: オプション情報
 
-##### :elixir.eval_forms
+#### :elixir.eval_forms
 
 ```elixir
 iex(4)> :elixir.eval_forms(
@@ -714,11 +714,13 @@ iex(5)>
 `IEx.Evaluator.eval`はこの様にしてREPLで入力されたelixirコードの文字列を評価し、
 結果を取得しているのです。
 
-#### IEx.Evaluator.evalの実体
+### IEx.Evaluator.evalの実体
 
 `IEx.Evaluator.eval`がelixirコードを評価する流れは以下となります。
 
 ![iex-evaluator-eval](/images/2021-12-20/iex-evaluator-eval.png)
+
+#### IEx.Evaluator.parse
 
 `IEx.Evaluator.parse`では、
 `:elixir.string_to_tokens`をcallしてelixirコードをトークンに変換(tokenize)、
@@ -761,7 +763,9 @@ defmodule IEx.Evaluator do
 end
 ```
 
-また`IEx.Evaluator.handle_eval`でこのフォームデータを`:elixir.eval_forms`をcallして評価(eval)し、結果を取得します。
+#### IEx.Evaluator.handle_eval
+
+`IEx.Evaluator.handle_eval`でこのフォームデータを`:elixir.eval_forms`をcallして評価(eval)し、結果を取得します。
 
 [lib/iex/lib/evaluator.ex](https://github.com/elixir-lang/elixir/blob/main/lib/iex/lib/iex/evaluator.ex)
 
