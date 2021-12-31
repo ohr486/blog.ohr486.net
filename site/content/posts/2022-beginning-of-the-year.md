@@ -1,9 +1,10 @@
 ---
-title: "2022 Beginning of the Year"
+title: "2022年目標"
 date: 2022-01-01T00:00:00+09:00
-draft: true
+draft: false
 tags: [ life ]
 categories: [ etc ]
+author: ohr486
 ---
 
 2021年の振り返りと2022年の計画です。
