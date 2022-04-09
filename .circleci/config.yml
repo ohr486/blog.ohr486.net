@@ -11,8 +11,6 @@ jobs:
       - checkout
       - run:
           command: env
-      - run:
-          command: ls -alh
       - slack/notify:
           event: always
 
