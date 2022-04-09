@@ -16,7 +16,7 @@ jobs:
           event: always
 
 workflows:
-  test-and-deploy:
+  deploy:
     jobs:
       - build:
           context: ohr486-circleci-notification
