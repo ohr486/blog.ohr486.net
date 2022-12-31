@@ -3,7 +3,7 @@ title: "2023年目標"
 date: 2023-01-01T00:00:00+09:00
 draft: false
 tags: [ life ]
-categories: [ etc]
+categories: [ etc ]
 author: ohr486
 ---
 
