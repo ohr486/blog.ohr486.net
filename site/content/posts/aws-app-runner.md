@@ -4,6 +4,11 @@ date: 2021-06-06T22:12:10+09:00
 draft: true
 tags: [ aws, app-runner ]
 categories: [ tech ]
+
+toc: true
+related: true
+social_share: true
+disable_comments: false
 ---
 
 ## AWS App Runnerとは
