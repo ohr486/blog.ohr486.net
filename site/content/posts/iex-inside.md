@@ -5,11 +5,6 @@ draft: false
 tags: [ elixir, advent-calendar ]
 categories: [ tech ]
 author: ohr486
-
-toc: true
-related: true
-social_share: true
-disable_comments: false
 ---
 
 この記事は[elixir Advent Calendar 2021](https://qiita.com/advent-calendar/2021/elixir)の18日目の記事です。
