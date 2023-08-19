@@ -5,11 +5,6 @@ draft: false
 tags: [ life ]
 categories: [ etc ]
 author: ohr486
-
-toc: true
-related: true
-social_share: true
-disable_comments: false
 ---
 
 2021年の振り返りと2022年の計画です。
