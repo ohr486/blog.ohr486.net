@@ -5,11 +5,6 @@ draft: false
 tags: [ hugo, aws ]
 categories: [ tech ]
 author: ohr486
-
-toc: true
-related: true
-social_share: true
-disable_comments: false
 ---
 
 blogのバックエンドをWordPress@AWS-EC2からhugo@AWS-S3に切り替えました。
