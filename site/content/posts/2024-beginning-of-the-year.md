@@ -28,14 +28,15 @@ author: ohr486
 ## 2024年の計画/目標
 
 * [life] 自転車 2000km/year
-* [life] ダイエット-15kg
+* [life] ダイエット -15kg
 * [life] お金 資産+1k
-* [life] 語学 TOEIC700点
-* [life] blog 1post/weekの仕組み化
+* [life] 語学 TOEIC 700点
+* [life] 読書 50冊/年
+* [tech] blog(1post/week)、youtube(1post/month)発信
 * [tech] tokyo.ex 1event/month
 * [tech] 国内カンファレンス開催
 * [tech] 海外conf登壇(elixir系)
-* [tech] 新しい言語習得
-* [work] 新規事業の成長
-* [work] 新サービスβリリース
+* [tech] 新しい言語習得(NES実装できるくらい)
+* [work] 新規事業の成長(来年も事業継続できている)
+* [work] 新サービス開発(βリリースできている)
  
