@@ -1,8 +1,8 @@
 #baseURL = "https://blog.ohr486.net/"
-#languageCode = "ja"
-#title = "ohr486's blog"
+languageCode = "ja"
+title = "ohr486's blog"
 hasCJKLanguage = true
-#theme = "hugo-liftoff"
+theme = "hugo-clarity"
 
 [params]
     version = "2.0.X"
@@ -70,7 +70,7 @@ hasCJKLanguage = true
         guessSyntax = true
         noClasses = false
 
-[author]
+[params.author]
     nickname = "ohr486"
 
 #[Permalinks]
