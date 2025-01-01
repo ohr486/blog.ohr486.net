@@ -7,4 +7,3 @@ primary_cta_page: "about"
 secondary_cta_page: "posts"
 ---
 
-

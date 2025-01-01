@@ -9,14 +9,14 @@ toc: true
 related: true
 social_share: true
 disable_comments: false
+featureImage: "/images/book-reviews/learning-go.jpeg"
+shareImage: "/images/book-reviews/learning-go.jpeg"
+thumbnail: "./images/book-reviews/foo.png"
 ---
 
 ## 書籍概要
 
 [初めてのGo言語](https://www.oreilly.co.jp/books/9784814400041/)
-
-![初めてのGo言語](/images/book-reviews/learning-go.jpeg)
-
 
 ## モチベーション
 

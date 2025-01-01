@@ -9,14 +9,14 @@ toc: true
 related: true
 social_share: true
 disable_comments: false
+featureImage: "/images/book-reviews/book-review-rust-perfect-guide.jpeg"
+shareImage: "/images/book-reviews/book-review-rust-perfect-guide.jpeg"
+thumbnail: "/images/book-reviews/book-review-rust-perfect-guide.jpeg"
 ---
 
 ## 書籍概要
 
 [Rustプログラミング完全ガイド](https://www.amazon.co.jp/dp/B0BG3ZSB9V)
-
-![Rustプログラミング完全ガイド](/images/book-reviews/book-review-rust-perfect-guide.jpeg)
-
 
 ## モチベーション
 
