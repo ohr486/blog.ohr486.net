@@ -46,7 +46,7 @@ disableHugoGeneratorInject = false # Default
 disableLiveReload = false # Default
 
 # Use this theme as git submodule
-theme = 'hugo-liftoff'
+theme = 'hugo-clarity'
 # Or, use this theme as hugo module
 # [module]
 # [[module.imports]]

@@ -1,4 +1,4 @@
-#baseURL = "https://blog.ohr486.net/"
+baseURL = "https://blog.ohr486.net/"
 languageCode = "ja"
 title = "ohr486's blog"
 hasCJKLanguage = true
@@ -47,22 +47,22 @@ theme = "hugo-clarity"
         images = "static/images/blog-logo.jpg"
         thumbnailUrl = "static/images/blog-logo.jpg"
 
-#[menu]
-#    [[menu.main]]
-#        identifier = "posts"
-#        name = "Posts"
-#        url = "/posts/"
-#        weight = 1
-#    [[menu.main]]
-#        identifier = "tags"
-#        name = "Tags"
-#        url = "/tags/"
-#        weight = 2
-#    [[menu.main]]
-#        identifier = "categories"
-#        name = "Categories"
-#        url = "/categories/"
-#        weight = 3
+[menu]
+    [[menu.main]]
+        identifier = "posts"
+        name = "Posts"
+        url = "/posts/"
+        weight = 1
+    [[menu.main]]
+        identifier = "tags"
+        name = "Tags"
+        url = "/tags/"
+        weight = 2
+    [[menu.main]]
+        identifier = "categories"
+        name = "Categories"
+        url = "/categories/"
+        weight = 3
 
 [markup]
     [markup.highlight]
@@ -73,8 +73,8 @@ theme = "hugo-clarity"
 [params.author]
     nickname = "ohr486"
 
-#[Permalinks]
-#    posts = ":year/:month/:day/:filename"
+[Permalinks]
+    posts = ":year/:month/:day/:filename"
 
 [deployment]
     [[deployment.targets]]
