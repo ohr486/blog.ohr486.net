@@ -11,7 +11,7 @@ social_share: true
 disable_comments: false
 featureImage: "/images/book-reviews/learning-go.jpeg"
 shareImage: "/images/book-reviews/learning-go.jpeg"
-thumbnail: "./images/book-reviews/foo.png"
+thumbnail: "./images/book-reviews/learning-go.jpeg"
 ---
 
 ## 書籍概要
